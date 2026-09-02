@@ -22,7 +22,7 @@ const PAYHIP = {
   goglobalBundle:    "https://payhip.com/b/yexOm",
   growthGlobalBundle:"https://payhip.com/b/aELIx",
   // FREE lead magnet — replace with your free (£0) Payhip product link once you create it:
-  freebie:           "https://payhip.com/UnboundedSpac3s",
+  freebie:           "https://payhip.com/b/7R4D8",
 };
 const pay = (key) => window.open(PAYHIP[key], "_blank", "noopener");
 
@@ -210,7 +210,24 @@ const STEPS=[["Discovery Call or Brief","We understand where you are and what's 
 const FAQS=[["How quickly can I see results?","Templates are ready to use the moment you download them. Done-for-you services typically deliver within 48 to 72 hours. Full operations builds take 1 to 2 weeks depending on scope."],["Do I need a big budget to get started?","Not at all. Single packs start at £17 and give immediate, practical value. A Founder Strategy Session at £125 is the ideal low-cost entry point, and it offsets against any service package."],["Are your templates editable and customisable?","Yes, everything is fully editable and delivered in Word, ready to make your own. No locked templates, no design skills required."],["Do you work with specific industries?","We cover seven sectors, from beauty and events to trades, food, creatives and online. Good operations are universal, the principles don't change by industry."],["What if I'm not sure what I need?","Book the free discovery call. We'll tell you honestly what would make the biggest difference, whether that's a £17 pack or a full engagement."]];
 const SECTORS=[["Beauty & Hair","20 packs","beauty"],["Creatives","10 packs","creatives"],["Events","20 packs","events"],["Food & Hospitality","20 packs","food"],["Trades & Property","22 packs","trades"],["Online & Coaching","22 packs","online"]];
 const BUNDLES=[["Core Essentials Bundle","£97","The six core packs every business needs, in one.","coreBundle"],["Scale-Up Bundle","£77","Five packs to take a running business to the next level.","scaleupBundle"],["Go Global Bundle","£77","Five packs to expand your business beyond the UK.","goglobalBundle"],["Growth & Global Bundle","£127","All ten scale-up and go-global packs together.","growthGlobalBundle"]];
-const RECO={starting:{track:"Just getting started",title:"Your one-page business foundation",bullets:["What you do and who it's for, in two clear lines","Your first three offers and what each costs","The documents you need before your first sale","One simple way to take payment and deliver"],note:"You don't need everything on day one. You need a backbone to build on."},running:{track:"Up and running",title:"The systems audit that stops the leaks",bullets:["Where enquiries and money are slipping through","The three processes to write down first","Branded documents to replace the ad-hoc ones","One admin task worth automating this month"],note:"You're trading. Now it's about tightening the engine."},scaling:{track:"Ready to scale",title:"Your scale-ready document suite",bullets:["The story an investor or partner needs to hear","Financials and positioning, made presentable","Systems that work when it's not just you","The one bottleneck to fix before you grow"],note:"It already works. Now make it bigger without breaking it."}};
+const INTAKE={
+  beauty:{name:"Beauty & Hair",key:"beauty",tip:"Before your first client, the document that protects you most is a consultation and consent form. It records allergies and patch tests, and it's your first line of defence if anything ever goes wrong."},
+  trades:{name:"Trades & Property",key:"trades",tip:"The fastest way to win more jobs isn't lower prices, it's a professional quote. A clear, branded quote beats a number sent over text, and it quietly signals you know your compliance."},
+  food:{name:"Food & Hospitality",key:"food",tip:"Get your allergen and food-safety paperwork sorted before you sell a single thing. It keeps you legal, and it's the first thing that trips new food businesses up."},
+  events:{name:"Events",key:"events",tip:"Your contract and deposit terms matter more than anything. They protect you from last-minute cancellations, which is exactly where event businesses lose real money."},
+  creatives:{name:"Creatives",key:"creatives",tip:"Put an IP and image-licensing clause in your contract from day one. It decides who owns the work, and getting it wrong quietly costs creatives their rights and their fees."},
+  online:{name:"Online & Coaching",key:"online",tip:"Your client agreement and privacy wording aren't optional for coaches and online sellers. They set clear boundaries and keep you and your clients safe, especially around advice and data."},
+  core:{name:"the foundations",key:"corePick",tip:"You don't need everything on day one. You need a backbone: a plan, a way to price, a way to onboard, and a simple contract. Get those four and you look and run like a real business."}
+};
+const KEYWORDS=[
+  ["beauty",["nail","lash","brow","hair","salon","barber","makeup","make-up","beauty","skin","aesthetic","wax","tan","massage","spa","wellness","therapist","pmu","microblad","facial","cosmetic"]],
+  ["trades",["electric","plumb","build","carpenter","joiner","plaster","roof","tiler","gas ","heating","handyman","trade","construction","property","landlord","estate agent","letting","decorat","landscap","scaffold","fitter"]],
+  ["food",["baker","cake","cafe","café","coffee","restaurant","takeaway","catering","chef","food","hospitality","bar ","pub","street food","kitchen","deli","drinks","vegan","juice","meal prep"]],
+  ["events",["wedding","event","festival","party","planner","florist"," dj ","venue","exhibition","pop-up","popup","supper club","staffing"]],
+  ["creatives",["photograph","videograph","designer","illustrat","content creat","web design","artist","copywrit","social media","creative","studio"]],
+  ["online",["coach","course","online","membership","consultant","virtual assistant","marketing","podcast","newsletter","ecommerce","e-commerce","dropship","affiliate","saas","digital product","freelance","educator"]],
+];
+const detectSector=(t)=>{const s=" "+t.toLowerCase()+" ";for(const[sec,words]of KEYWORDS){if(words.some(w=>s.includes(w)))return sec;}return "core";};
 
 const Footer=({go})=>(
   <footer><div className="wrap">
@@ -232,7 +249,7 @@ export default function App(){
   const [desc,setDesc]=useState("");
   const [result,setResult]=useState(null);
   const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
-  const findStart=()=>{ if(!desc.trim()){return;} setResult(RECO[stage]); };
+  const findStart=()=>{ if(!desc.trim()){return;} const sec=detectSector(desc); setResult({...INTAKE[sec], unknown: sec==="core"}); };
 
   return (
     <div className="u"><style>{CSS}</style>
@@ -269,15 +286,19 @@ export default function App(){
         <section style={{background:"var(--ink2)"}}><div className="wrap"><div className="intakebox">
           <div style={{textAlign:"center"}}><span className="free">Free</span></div>
           <h2>Not sure where to start? Ask.</h2>
-          <p className="isub">Tell us where you are and what's on your mind. We'll point you to the right first step.</p>
+          <p className="isub">Tell us where you are and what's on your mind. We'll share a quick, useful tip and point you to the exact pack for you.</p>
           <label>Where are you right now?</label>
           <select value={stage} onChange={e=>setStage(e.target.value)}><option value="starting">I'm just getting started</option><option value="running">I'm up and running</option><option value="scaling">I'm ready to scale</option></select>
           <label style={{marginTop:16}}>Tell us about your business and what's on your mind</label>
           <textarea rows={3} value={desc} onChange={e=>setDesc(e.target.value)} placeholder="e.g. I run a small mobile nail business and I keep losing track of bookings and payments…"/>
           <button className="btn gold ask" onClick={findStart}>Show me where to start</button>
-          {result&&<div className="result"><div className="rlabel">Your starting point</div><h4>{result.track}</h4><p className="rnote">{result.note}</p>
-            <div className="starter"><div className="s" style={{fontSize:18,marginBottom:12,color:"var(--cream)"}}>First document to build: {result.title}</div><ol>{result.bullets.map((b,i)=><li key={i}>{b}</li>)}</ol></div>
-            <button className="btn gold" onClick={()=>go("templates")} style={{marginTop:20}}>Find your pack →</button></div>}
+          {result&&<div className="result"><div className="rlabel">Here's where I'd start you</div><h4>{result.unknown?"Start with the foundations":result.name}</h4><p className="rnote">{result.tip}</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:2}}>
+              <button className="btn gold" onClick={()=>pay(result.key)}>{result.unknown?"Get the Core Essentials →":`Browse the ${result.name} packs →`}</button>
+              {result.unknown&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("freebie")}>Free checklist</button>}
+            </div>
+            <p style={{color:"var(--muted-l)",fontSize:14,marginTop:18}}>Rather talk it through first? <button onClick={()=>go("services","book")} style={{background:"none",border:"none",color:"var(--gold-br)",cursor:"pointer",fontFamily:"inherit",fontSize:14,textDecoration:"underline",padding:0}}>Book a free call with me →</button></p>
+          </div>}
         </div></div></section>
         <section style={{background:"var(--ink)"}}><div className="wrap" style={{textAlign:"center"}}>
           <div className="eyebrow">Free download</div>
