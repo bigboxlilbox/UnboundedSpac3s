@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://unboundedspac3s.com/sitemap.xml
