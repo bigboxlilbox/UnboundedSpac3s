@@ -248,8 +248,23 @@ export default function App(){
   const [stage,setStage]=useState("running");
   const [desc,setDesc]=useState("");
   const [result,setResult]=useState(null);
+  const [loading,setLoading]=useState(false);
   const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
-  const findStart=()=>{ if(!desc.trim()){return;} const sec=detectSector(desc); setResult({...INTAKE[sec], unknown: sec==="core"}); };
+  const findStart=async()=>{
+    if(!desc.trim())return;
+    setLoading(true); setResult(null);
+    const stageWord={starting:"just getting started",running:"up and running",scaling:"ready to scale"}[stage];
+    try{
+      const r=await fetch("/api/ask",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:desc,stage:stageWord})});
+      if(!r.ok) throw new Error();
+      const d=await r.json();
+      const base=INTAKE[d.sector]||INTAKE.core;
+      setResult({name:base.name,key:base.key,tip:d.reply||base.tip,unknown:(d.sector||"core")==="core",scaling:stage==="scaling"});
+    }catch{
+      const sec=detectSector(desc);
+      setResult({...INTAKE[sec],unknown:sec==="core",scaling:stage==="scaling"});
+    }finally{setLoading(false);}
+  };
 
   return (
     <div className="u"><style>{CSS}</style>
@@ -291,10 +306,11 @@ export default function App(){
           <select value={stage} onChange={e=>setStage(e.target.value)}><option value="starting">I'm just getting started</option><option value="running">I'm up and running</option><option value="scaling">I'm ready to scale</option></select>
           <label style={{marginTop:16}}>Tell us about your business and what's on your mind</label>
           <textarea rows={3} value={desc} onChange={e=>setDesc(e.target.value)} placeholder="e.g. I run a small mobile nail business and I keep losing track of bookings and payments…"/>
-          <button className="btn gold ask" onClick={findStart}>Show me where to start</button>
+          <button className="btn gold ask" onClick={findStart} disabled={loading}>{loading?"Thinking it through…":"Show me where to start"}</button>
           {result&&<div className="result"><div className="rlabel">Here's where I'd start you</div><h4>{result.unknown?"Start with the foundations":result.name}</h4><p className="rnote">{result.tip}</p>
             <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:2}}>
               <button className="btn gold" onClick={()=>pay(result.key)}>{result.unknown?"Get the Core Essentials →":`Browse the ${result.name} packs →`}</button>
+              {result.scaling&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("scaleupPick")}>Add the Scale-Up packs →</button>}
               {result.unknown&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("freebie")}>Free checklist</button>}
             </div>
             <p style={{color:"var(--muted-l)",fontSize:14,marginTop:18}}>Rather talk it through first? <button onClick={()=>go("services","book")} style={{background:"none",border:"none",color:"var(--gold-br)",cursor:"pointer",fontFamily:"inherit",fontSize:14,textDecoration:"underline",padding:0}}>Book a free call with me →</button></p>
