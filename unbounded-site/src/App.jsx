@@ -228,6 +228,17 @@ const KEYWORDS=[
   ["online",["coach","course","online","membership","consultant","virtual assistant","marketing","podcast","newsletter","ecommerce","e-commerce","dropship","affiliate","saas","digital product","freelance","educator"]],
 ];
 const detectSector=(t)=>{const s=" "+t.toLowerCase()+" ";for(const[sec,words]of KEYWORDS){if(words.some(w=>s.includes(w)))return sec;}return "core";};
+const QUIZ=[
+ {id:"work",q:"What kind of work lights you up?",opts:[["Hands-on trades or property","trades"],["Beauty, hair or wellness","beauty"],["Creative work","creatives"],["Events and bringing people together","events"],["Food and drink","food"],["Coaching, advising or selling online","online"],["Honestly, I'm not sure yet","mixed"]]},
+ {id:"stage",q:"Where are you right now?",opts:[["Just an idea","starting"],["Already trading","running"],["Ready to grow","scaling"]]},
+ {id:"sell",q:"What will you mainly sell?",opts:[["My time and skills","time"],["A product","product"],["My knowledge","knowledge"]]},
+ {id:"aim",q:"What do you most want this business to give you?",opts:[["More money","money"],["Time and freedom","freedom"],["To do what I love","passion"],["To build something big","scale"]]},
+ {id:"invest",q:"Realistically, what can you put in right now?",opts:[["Starting lean","lean"],["A bit, to set up properly","some"],["Ready to invest to grow","ready"]]},
+ {id:"worry",q:"What's your biggest worry?",opts:[["Looking professional","professional"],["Getting clients","clients"],["Staying legal and compliant","legal"],["Staying organised","organised"]]},
+];
+const AIM_LINE={money:"You're after more money, so pricing well and winning clients is where to focus.",freedom:"You want time and freedom, so systems that run without you are worth building early.",passion:"You want to do what you love, so getting the admin off your plate frees you up for it.",scale:"You're building something big, so strong foundations now save real pain later."};
+const INVEST_LINE={lean:"Starting lean is smart. The single packs let you build up one at a time.",some:"With a bit to invest, a bundle gets you set up properly in one go.",ready:"You're ready to invest, so a bundle plus the Scale-Up packs will move you fastest."};
+const quizResult=(a)=>{const weak=a.work==="mixed";const sec=weak?"core":a.work;const base=INTAKE[sec]||INTAKE.core;return {weak,name:base.name,key:base.key,lines:[AIM_LINE[a.aim],INVEST_LINE[a.invest]].filter(Boolean),scaling:a.stage==="scaling"};};
 
 const Footer=({go})=>(
   <footer><div className="wrap">
@@ -249,6 +260,10 @@ export default function App(){
   const [desc,setDesc]=useState("");
   const [result,setResult]=useState(null);
   const [loading,setLoading]=useState(false);
+  const [quizStep,setQuizStep]=useState(0);
+  const [quizAns,setQuizAns]=useState({});
+  const [quizEmail,setQuizEmail]=useState("");
+  const [quizSent,setQuizSent]=useState(false);
   const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
   const findStart=async()=>{
     if(!desc.trim())return;
@@ -259,10 +274,10 @@ export default function App(){
       if(!r.ok) throw new Error();
       const d=await r.json();
       const base=INTAKE[d.sector]||INTAKE.core;
-      setResult({name:base.name,key:base.key,tip:d.reply||base.tip,unknown:(d.sector||"core")==="core",scaling:stage==="scaling"});
+      setResult({name:base.name,key:base.key,tip:d.reply||base.tip,unknown:(d.sector||"core")==="core",scaling:stage==="scaling",fit:d.fit||"strong"});
     }catch{
       const sec=detectSector(desc);
-      setResult({...INTAKE[sec],unknown:sec==="core",scaling:stage==="scaling"});
+      setResult({...INTAKE[sec],unknown:sec==="core",scaling:stage==="scaling",fit:"strong"});
     }finally{setLoading(false);}
   };
 
@@ -271,6 +286,7 @@ export default function App(){
       <nav><div className="wrap nrow">
         <button className="logo s" onClick={()=>go("home")}>Unbounded <i>Spac3s</i></button>
         <div className="nlinks">
+          <button className={page==="quiz"?"active":""} onClick={()=>go("quiz")}>Find Your Fit</button>
           <button className={page==="templates"?"active":""} onClick={()=>go("templates")}>Templates</button>
           <button className={page==="services"?"active":""} onClick={()=>go("services")}>Services</button>
           <button onClick={()=>go("services","book")}>Book a Call</button>
@@ -307,13 +323,23 @@ export default function App(){
           <label style={{marginTop:16}}>Tell us about your business and what's on your mind</label>
           <textarea rows={3} value={desc} onChange={e=>setDesc(e.target.value)} placeholder="e.g. I run a small mobile nail business and I keep losing track of bookings and payments…"/>
           <button className="btn gold ask" onClick={findStart} disabled={loading}>{loading?"Thinking it through…":"Show me where to start"}</button>
-          {result&&<div className="result"><div className="rlabel">Here's where I'd start you</div><h4>{result.unknown?"Start with the foundations":result.name}</h4><p className="rnote">{result.tip}</p>
+          {result&&<div className="result"><div className="rlabel">Here's where I'd start you</div><h4>{result.fit==="weak"?"This one's worth a chat":(result.unknown?"Start with the foundations":result.name)}</h4><p className="rnote">{result.tip}</p>
+            {result.fit==="weak"?(
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:2}}>
+              <button className="btn gold" onClick={()=>go("services","book")}>Book a free discovery call →</button>
+              {!result.unknown&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay(result.key)}>See the {result.name} packs</button>}
+              <button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("freebie")}>Free checklist</button>
+            </div>
+            ):(
+            <>
             <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:2}}>
               <button className="btn gold" onClick={()=>pay(result.key)}>{result.unknown?"Get the Core Essentials →":`Browse the ${result.name} packs →`}</button>
               {result.scaling&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("scaleupPick")}>Add the Scale-Up packs →</button>}
               {result.unknown&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("freebie")}>Free checklist</button>}
             </div>
             <p style={{color:"var(--muted-l)",fontSize:14,marginTop:18}}>Rather talk it through first? <button onClick={()=>go("services","book")} style={{background:"none",border:"none",color:"var(--gold-br)",cursor:"pointer",fontFamily:"inherit",fontSize:14,textDecoration:"underline",padding:0}}>Book a free call with me →</button></p>
+            </>
+            )}
           </div>}
         </div></div></section>
         <section style={{background:"var(--ink)"}}><div className="wrap" style={{textAlign:"center"}}>
@@ -383,6 +409,37 @@ export default function App(){
           <p className="allsectors" style={{color:"var(--muted-l)"}}>Prefer to browse everything? <a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener" style={{color:"var(--gold-br)"}}>Visit the full shop →</a></p>
         </div></section>
       </div>}
+
+      {page==="quiz"&&<div style={{background:"var(--ink2)",minHeight:"72vh"}}><section><div className="wrap" style={{maxWidth:760}}>
+        <div style={{textAlign:"center",marginBottom:30}}><div className="eyebrow" style={{color:"var(--gold)"}}>Free · about a minute</div><h2 className="h2" style={{color:"var(--cream)"}}>Not sure what to build? Find your footing.</h2><p className="sub" style={{color:"var(--muted-l)",margin:"12px auto 0"}}>A few quick taps and we'll point you toward a direction and a starting point.</p></div>
+        {quizStep<QUIZ.length?(
+          <div className="intakebox">
+            <div className="rlabel">Question {quizStep+1} of {QUIZ.length}</div>
+            <h4 style={{fontFamily:"'Instrument Serif',serif",fontSize:24,color:"var(--cream)",margin:"8px 0 18px"}}>{QUIZ[quizStep].q}</h4>
+            <div style={{display:"grid",gap:10}}>{QUIZ[quizStep].opts.map(([label,tag])=><button key={tag} onClick={()=>{setQuizAns(a=>({...a,[QUIZ[quizStep].id]:tag}));setQuizStep(x=>x+1);}} style={{textAlign:"left",background:"var(--ink)",border:"1px solid var(--dline)",color:"var(--cream)",borderRadius:10,padding:"14px 16px",fontFamily:"inherit",fontSize:15,cursor:"pointer"}}>{label}</button>)}</div>
+            {quizStep>0&&<button onClick={()=>setQuizStep(x=>x-1)} style={{marginTop:16,background:"none",border:"none",color:"var(--muted-l)",cursor:"pointer",fontFamily:"inherit",fontSize:13}}>← Back</button>}
+          </div>
+        ):(()=>{const R=quizResult(quizAns);return(
+          <div className="intakebox">
+            <div className="rlabel">Here's where I'd point you</div>
+            <h4 style={{fontFamily:"'Instrument Serif',serif",fontSize:26,color:"var(--cream)",margin:"6px 0 10px"}}>{R.weak?"You've got real options.":`Sounds like ${R.name}.`}</h4>
+            <p className="rnote">{R.weak?"That's genuinely worth talking through before you commit to one path. Let's have a quick chat and I'll help you find the direction that fits you.":R.lines.join(" ")}</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:4}}>
+              {R.weak?<><button className="btn gold" onClick={()=>go("services","book")}>Book a free discovery call →</button><button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("corePick")}>Start with Core Essentials</button></>:<><button className="btn gold" onClick={()=>pay(R.key)}>Browse the {R.name} packs →</button>{R.scaling&&<button className="btn" style={{border:"1px solid var(--dline)",color:"var(--cream)"}} onClick={()=>pay("scaleupPick")}>Add the Scale-Up packs →</button>}</>}
+            </div>
+            <div style={{borderTop:"1px solid var(--dline)",marginTop:24,paddingTop:20}}>
+              {quizSent?<p style={{color:"var(--gold-br)"}}>Brilliant, noted. When our email is live your results and a free checklist will come straight over.</p>:<>
+                <label style={{display:"block",color:"var(--muted-l)",fontSize:14,marginBottom:8}}>Want your results and a free starter checklist emailed over?</label>
+                <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                  <input value={quizEmail} onChange={e=>setQuizEmail(e.target.value)} placeholder="you@email.com" style={{flex:"1 1 220px",background:"var(--ink)",border:"1px solid var(--dline)",color:"var(--cream)",borderRadius:10,padding:"12px 14px",fontFamily:"inherit",fontSize:15}}/>
+                  <button className="btn gold" onClick={()=>{if(!quizEmail.includes("@"))return;fetch("/api/quiz-lead",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:quizEmail,answers:quizAns,result:R.weak?"discovery call":R.name})}).catch(()=>{});setQuizSent(true);}}>Send my results</button>
+                </div>
+              </>}
+            </div>
+            <button onClick={()=>{setQuizStep(0);setQuizAns({});setQuizSent(false);}} style={{marginTop:18,background:"none",border:"none",color:"var(--muted-l)",cursor:"pointer",fontFamily:"inherit",fontSize:13}}>↺ Start again</button>
+          </div>
+        );})()}
+      </div></section></div>}
 
       <Footer go={go}/>
     </div>
