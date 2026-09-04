@@ -53,7 +53,11 @@ const CSS = `
 .u .nlinks button{background:none;border:none;font-family:inherit;color:var(--text);font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;cursor:pointer}
 .u .nlinks button:hover,.u .nlinks button.active{color:var(--gold)}
 .u .nlinks .start{background:var(--ink);color:var(--cream);padding:11px 22px;border-radius:40px}
-@media(max-width:860px){.u .nlinks button:not(.start){display:none}}
+.u .nav-mobile-btn{display:none;background:none;border:none;font-size:22px;color:var(--text);cursor:pointer;line-height:1;padding:4px 2px}
+.u .mobile-menu{display:flex;flex-direction:column;padding:4px 30px 14px;background:var(--cream);border-bottom:1px solid var(--line)}
+.u .mobile-menu button{background:none;border:none;text-align:left;font-family:inherit;color:var(--text);font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;padding:14px 0;cursor:pointer;border-top:1px solid var(--line)}
+.u .mobile-menu button:hover{color:var(--gold)}
+@media(max-width:860px){.u .nlinks button:not(.start):not(.nav-mobile-btn){display:none}.u .nav-mobile-btn{display:inline-flex}}
 /* hero */
 .u .hero{display:grid;grid-template-columns:1.05fr .95fr;min-height:72vh}
 @media(max-width:860px){.u .hero{grid-template-columns:1fr}}
@@ -264,6 +268,7 @@ export default function App(){
   const [quizAns,setQuizAns]=useState({});
   const [quizEmail,setQuizEmail]=useState("");
   const [quizSent,setQuizSent]=useState(false);
+  const [menuOpen,setMenuOpen]=useState(false);
   const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
   const findStart=async()=>{
     if(!desc.trim())return;
@@ -284,7 +289,7 @@ export default function App(){
   return (
     <div className="u"><style>{CSS}</style>
       <nav><div className="wrap nrow">
-        <button className="logo s" onClick={()=>go("home")}>Unbounded <i>Spac3s</i></button>
+        <button className="logo s" onClick={()=>{go("home");setMenuOpen(false);}}>Unbounded <i>Spac3s</i></button>
         <div className="nlinks">
           <button className={page==="quiz"?"active":""} onClick={()=>go("quiz")}>Find Your Fit</button>
           <button className={page==="templates"?"active":""} onClick={()=>go("templates")}>Templates</button>
@@ -292,8 +297,17 @@ export default function App(){
           <button onClick={()=>go("services","book")}>Book a Call</button>
           <button onClick={()=>go("home","faq")}>FAQ</button>
           <button className="start" onClick={()=>go("templates")}>Shop Now</button>
+          <button className="nav-mobile-btn" aria-label="Menu" onClick={()=>setMenuOpen(o=>!o)}>{menuOpen?"\u2715":"\u2630"}</button>
         </div>
-      </div></nav>
+      </div>
+      {menuOpen&&<div className="mobile-menu">
+        <button onClick={()=>{go("quiz");setMenuOpen(false);}}>Find Your Fit</button>
+        <button onClick={()=>{go("templates");setMenuOpen(false);}}>Templates</button>
+        <button onClick={()=>{go("services");setMenuOpen(false);}}>Services</button>
+        <button onClick={()=>{go("services","book");setMenuOpen(false);}}>Book a Call</button>
+        <button onClick={()=>{go("home","faq");setMenuOpen(false);}}>FAQ</button>
+      </div>}
+      </nav>
 
       {page==="home"&&<>
         <section className="hero" style={{padding:0}}>
@@ -309,7 +323,7 @@ export default function App(){
         <div className="marq"><div className="mtrack">{["Founder Toolkits","Workflow Design","Branded Proposals","Client Systems","Operations Consulting","Founder Toolkits","Workflow Design","Branded Proposals","Client Systems","Operations Consulting"].map((t,i)=><span key={i}>{t}</span>)}</div></div>
         <section className="prob"><div className="wrap" style={{display:"contents"}}>
           <div className="before"><div className="bt">Before Unbounded Spac3s</div>
-            {[["Proposal v7_FINAL_FINAL.docx","#c0563f"],["Client notes scattered across 3 apps","#B8843A"],['Onboarding? "I\'ll send something over…"',"#8a8175"],["Business plan… somewhere in Google Drive","#c0563f"],["No process. No system. Just vibes.","#B8843A"]].map(([t,c])=><div className="brow" key={t}><span className="dot" style={{background:c}}/>{t}</div>)}</div>
+            {[["Proposal v7_FINAL_FINAL.docx","#c0563f"],["Client notes scattered across 3 apps","#B8843A"],['Onboarding? "I\'ll send something over…"',"#8a8175"],["Business plan… somewhere in Google Drive","#c0563f"],["No process. No system. Just hoping it holds.","#B8843A"]].map(([t,c])=><div className="brow" key={t}><span className="dot" style={{background:c}}/>{t}</div>)}</div>
           <div><div className="eyebrow">The problem</div><h2 className="h2">You're brilliant at what you do. Running the business is another story.</h2>
             <p className="sub" style={{maxWidth:480}}>Most founders start with great ideas and real skills, but no infrastructure. The chaos quietly costs you clients, credibility and time.</p>
             <div className="plist">{PROBLEMS.map((p,i)=><div className="pitem" key={i}><span className="n">0{i+1}</span><p>{p}</p></div>)}</div></div>
