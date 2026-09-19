@@ -16,6 +16,7 @@ const SITE = "https://unboundedspac3s.com";
 const SITE_NAME = "Unbounded Spac3s";
 const AUTHOR = "Unbounded Spac3s";
 const DEFAULT_IMAGE = SITE + "/og-image.png";
+const PIN_IMAGE = SITE + "/pin-image.jpg";
 
 // Pages from the main site to keep in the sitemap
 const MAIN_PAGES = ["/"];
@@ -89,7 +90,7 @@ const readPost = (file) => {
     updated: /^\d{4}-\d{2}-\d{2}$/.test(meta.updated || "") ? meta.updated : meta.date,
     sector: meta.sector || "",
     pack: PACKS[(meta.pack || "").toLowerCase()] || null,
-    image: meta.image ? (meta.image.startsWith("http") ? meta.image : SITE + "/" + meta.image.replace(/^\//, "")) : "",
+    image: meta.image ? (meta.image.startsWith("http") ? meta.image : SITE + "/" + meta.image.replace(/^\//, "")) : PIN_IMAGE,
     minutes: Math.max(1, Math.round(words / 200)),
     html: marked.parse(body),
   };
@@ -127,6 +128,7 @@ h1.serif{font-size:clamp(38px,6vw,60px);line-height:1.04;margin:10px 0 18px}
 .lede{font-size:19px;color:var(--muted);max-width:620px}
 .meta{font-size:13.5px;color:var(--muted);margin-top:22px;padding-bottom:30px;border-bottom:1px solid var(--line)}
 .meta span+span{margin-left:14px}
+.hero{width:100%;max-width:340px;display:block;margin:34px auto 0;border-radius:14px}
 .post{font-size:17px;line-height:1.75;padding-top:34px}
 .post>*+*{margin-top:1.1em}
 .post h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:31px;line-height:1.15;margin-top:1.7em}
@@ -276,6 +278,7 @@ ${p.sector ? `<div class="sector">${esc(p.sector)}</div>` : ""}
 <h1 class="serif">${esc(p.title)}</h1>
 <p class="lede">${esc(p.description)}</p>
 <div class="meta"><span>${ukDate(p.date)}</span><span>${p.minutes} minute read</span></div>
+<img class="hero" src="${p.image}" alt="${esc(p.title)}" width="1000" height="1500" />
 <div class="post">${p.html}</div>
 ${pack}
 ${more}
