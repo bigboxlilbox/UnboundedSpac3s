@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // ─────────────────────────────────────────────────────────────
-// Unbounded Spac3s — live site. Every buy button opens its real
+// Unbounded Spac3s, live site. Every buy button opens its real
 // Payhip product. Singles are per-category pickers; four bundles.
 // ─────────────────────────────────────────────────────────────
 
@@ -21,7 +21,7 @@ const PAYHIP = {
   scaleupBundle:     "https://payhip.com/b/n6XOw",
   goglobalBundle:    "https://payhip.com/b/yexOm",
   growthGlobalBundle:"https://payhip.com/b/aELIx",
-  // FREE lead magnet — replace with your free (£0) Payhip product link once you create it:
+  // FREE lead magnet - replace with your free (£0) Payhip product link once you create it:
   freebie:           "https://payhip.com/b/7R4D8",
 };
 const pay = (key) => window.open(PAYHIP[key], "_blank", "noopener");
@@ -36,7 +36,7 @@ const CSS = `
 .u .s{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
 .u .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
 .u .eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600}
-.u .eyebrow:before{content:"— ";opacity:.7}
+.u .eyebrow:before{content:"• ";opacity:.7}
 .u .h2{font-family:'Instrument Serif',serif;font-size:clamp(30px,4.6vw,52px);line-height:1.05;margin-top:14px}
 .u .sub{color:var(--muted);font-size:17px;max-width:560px;margin-top:14px}
 .u section{padding:66px 0}
@@ -117,7 +117,7 @@ const CSS = `
 .u .svc p{font-size:14.5px;color:var(--muted)}.u .svc.dk p{color:var(--muted-l)}
 .u .svc ul{list-style:none;margin:16px 0}
 .u .svc li{font-size:13.5px;padding:4px 0 4px 16px;position:relative}.u .svc.dk li{color:var(--cream)}
-.u .svc li:before{content:"–";position:absolute;left:0;color:var(--gold)}
+.u .svc li:before{content:"•";position:absolute;left:0;color:var(--gold)}
 .u .svc .from{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
 .u .doors{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 @media(max-width:820px){.u .doors{grid-template-columns:1fr}}
@@ -385,7 +385,7 @@ export default function App(){
       {page==="services"&&<>
         <section style={{background:"var(--cream)"}}><div className="wrap"><div className="eyebrow">Wherever you are</div><h2 className="h2">There's a way in for every stage.</h2>
           <div className="doors">{DOORS.map(([n,t,d,items])=><div className="door" key={n}><div className="dn">{n}</div><h3>{t}</h3><p>{d}</p><ul>{items.map(x=><li key={x}>{x}</li>)}</ul></div>)}</div>
-          <p className="allsectors">For <b>every sector</b> — beauty, events, food, creatives, trades, property, online and coaching.</p></div></section>
+          <p className="allsectors">For <b>every sector</b>: beauty, events, food, creatives, trades, property, online and coaching.</p></div></section>
         <section id="services"><div className="wrap"><div className="eyebrow">What we do</div><h2 className="h2">Services built for how founders actually work.</h2>
           <p className="sub">Whether you need a single document, a full system build or an expert in your corner, there's an option that fits where you are.</p>
           <div className="grid3">{SERVICES.map(([num,title,d,bullets,price,dk])=><div className={"svc"+(dk?" dk":"")} key={num}><div className="num">{num}</div><h3>{title}</h3><p>{d}</p><ul>{bullets.map(b=><li key={b}>{b}</li>)}</ul><div className="from">{price}</div></div>)}</div></div></section>
