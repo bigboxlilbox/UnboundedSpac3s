@@ -34,6 +34,9 @@ const PACKS = {
 };
 const FREEBIE = "https://payhip.com/b/7R4D8";
 
+// Today, as 2026-01-31. Posts dated later than this stay hidden.
+const TODAY = new Date().toISOString().slice(0, 10);
+
 // ---------- helpers ----------
 
 const esc = (s = "") =>
@@ -74,6 +77,10 @@ const readPost = (file) => {
   }
   if (/^(yes|true)$/i.test(meta.draft || "")) {
     console.log(`[blog] ${file}: draft, not published`);
+    return null;
+  }
+  if (meta.date > TODAY) {
+    console.log(`[blog] ${file}: scheduled for ${meta.date}, not published yet`);
     return null;
   }
   if (meta.pack && !PACKS[meta.pack.toLowerCase()]) {
