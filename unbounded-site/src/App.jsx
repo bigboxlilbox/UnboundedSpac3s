@@ -50,14 +50,14 @@ const CSS = `
 .u .logo{font-family:'Instrument Serif',serif;font-size:23px;cursor:pointer;background:none;border:none}
 .u .logo i{color:var(--gold);font-style:italic}
 .u .nlinks{display:flex;gap:26px;align-items:center}
-.u .nlinks button{background:none;border:none;font-family:inherit;color:var(--text);font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;cursor:pointer}
-.u .nlinks button:hover,.u .nlinks button.active{color:var(--gold)}
+.u .nlinks button,.u .nlinks a.nlink{background:none;border:none;font-family:inherit;color:var(--text);font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;cursor:pointer;text-decoration:none}
+.u .nlinks button:hover,.u .nlinks button.active,.u .nlinks a.nlink:hover{color:var(--gold)}
 .u .nlinks .start{background:var(--ink);color:var(--cream);padding:11px 22px;border-radius:40px}
 .u .nav-mobile-btn{display:none;background:none;border:none;font-size:22px;color:var(--text);cursor:pointer;line-height:1;padding:4px 2px}
 .u .mobile-menu{display:flex;flex-direction:column;padding:4px 30px 14px;background:var(--cream);border-bottom:1px solid var(--line)}
-.u .mobile-menu button{background:none;border:none;text-align:left;font-family:inherit;color:var(--text);font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;padding:14px 0;cursor:pointer;border-top:1px solid var(--line)}
-.u .mobile-menu button:hover{color:var(--gold)}
-@media(max-width:860px){.u .nlinks button:not(.start):not(.nav-mobile-btn){display:none}.u .nav-mobile-btn{display:inline-flex}}
+.u .mobile-menu button,.u .mobile-menu a.nlink{background:none;border:none;text-align:left;font-family:inherit;color:var(--text);font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;padding:14px 0;cursor:pointer;border-top:1px solid var(--line);text-decoration:none}
+.u .mobile-menu button:hover,.u .mobile-menu a.nlink:hover{color:var(--gold)}
+@media(max-width:860px){.u .nlinks button:not(.start):not(.nav-mobile-btn){display:none}.u .nlinks a.nlink{display:none}.u .nav-mobile-btn{display:inline-flex}}
 /* hero */
 .u .hero{display:grid;grid-template-columns:1.05fr .95fr;min-height:72vh}
 @media(max-width:860px){.u .hero{grid-template-columns:1fr}}
@@ -251,7 +251,7 @@ const Footer=({go})=>(
         <p className="ftag">Practical tools, templates and systems to help founders get organised, present professionally and run more smoothly.</p></div>
       <div className="fcol"><h5>Templates</h5><button onClick={()=>go("templates")}>Single packs</button><button onClick={()=>go("templates")}>Bundles</button><button onClick={()=>go("templates")}>Scale-up & global</button></div>
       <div className="fcol"><h5>Services</h5><button onClick={()=>go("services")}>What we do</button><button onClick={()=>go("services","process")}>How it works</button><button onClick={()=>go("services","book")}>Book a call</button></div>
-      <div className="fcol"><h5>Company</h5><a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a><button onClick={()=>go("home","faq")}>FAQ</button><button onClick={()=>go("services","book")}>Contact</button></div>
+      <div className="fcol"><h5>Company</h5><a href="/blog">Blog</a><a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a><button onClick={()=>go("home","faq")}>FAQ</button><button onClick={()=>go("services","book")}>Contact</button></div>
     </div>
     <div className="fbot"><span>© 2026 Unbounded Spac3s. All rights reserved.</span><span>hello@unboundedspac3s.com</span><span>Built for founders. Designed with purpose.</span></div>
   </div></footer>
@@ -270,6 +270,14 @@ export default function App(){
   const [quizSent,setQuizSent]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
+
+  useEffect(()=>{
+    const params=new URLSearchParams(window.location.search);
+    const p=params.get("page");
+    const anchor=params.get("to")||window.location.hash.replace("#","");
+    if(p&&["home","templates","services","quiz"].includes(p))setPage(p);
+    if(anchor)setTimeout(()=>{document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"});},150);
+  },[]);
   const findStart=async()=>{
     if(!desc.trim())return;
     setLoading(true); setResult(null);
@@ -296,6 +304,7 @@ export default function App(){
           <button className={page==="services"?"active":""} onClick={()=>go("services")}>Services</button>
           <button onClick={()=>go("services","book")}>Book a Call</button>
           <button onClick={()=>go("home","faq")}>FAQ</button>
+          <a className="nlink" href="/blog">Blog</a>
           <button className="start" onClick={()=>go("templates")}>Shop Now</button>
           <button className="nav-mobile-btn" aria-label="Menu" onClick={()=>setMenuOpen(o=>!o)}>{menuOpen?"\u2715":"\u2630"}</button>
         </div>
@@ -306,6 +315,7 @@ export default function App(){
         <button onClick={()=>{go("services");setMenuOpen(false);}}>Services</button>
         <button onClick={()=>{go("services","book");setMenuOpen(false);}}>Book a Call</button>
         <button onClick={()=>{go("home","faq");setMenuOpen(false);}}>FAQ</button>
+        <a className="nlink" href="/blog">Blog</a>
       </div>}
       </nav>
 
