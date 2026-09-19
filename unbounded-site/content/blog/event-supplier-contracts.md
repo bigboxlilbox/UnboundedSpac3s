@@ -1,4 +1,4 @@
-title: Five documents every new beauty business needs before the first client
+Five documents every new beauty business needs before the first client
 description: From consultation forms to cancellation policies, here are the five documents that protect a new beauty or hair business, keep clients clear on what to expect, and make you look established from day one.
 date: 2026-09-30
 sector: Beauty & Hair
