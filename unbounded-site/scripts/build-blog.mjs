@@ -58,7 +58,8 @@ const cleanDashes = (text, file) => {
 const readPost = (file) => {
   let raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf8").replace(/\r\n/g, "\n");
   raw = cleanDashes(raw, file);
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  // The opening --- is optional, because Word turns it into a line break when pasted
+  const match = raw.match(/^(?:---\n)?([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) {
     console.warn(`[blog] ${file}: skipped, the header block between --- lines is missing`);
     return null;
