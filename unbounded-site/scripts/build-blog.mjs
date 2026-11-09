@@ -21,6 +21,9 @@ const PIN_IMAGE = SITE + "/pin-image.jpg";
 // Pages from the main site to keep in the sitemap
 const MAIN_PAGES = ["/"];
 
+// Legal pages, written in content/legal and published at /privacy and /terms
+const LEGAL_DIR = path.join(ROOT, "content", "legal");
+
 // Payhip packs. In a post, write the word on the left, for example: pack: beauty
 const PACKS = {
   beauty: { name: "Beauty & Hair", url: "https://payhip.com/b/ZoaR0", price: "Single packs from £17" },
@@ -173,6 +176,10 @@ footer{background:var(--ink);color:rgba(245,241,232,.7);font-size:13.5px}
 .frow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;padding-top:34px;padding-bottom:34px}
 footer a{text-decoration:none}footer a:hover{color:var(--gold-br)}
 footer .logo{color:var(--cream);font-size:21px}
+.legal .post h2{font-size:27px}
+.legal .post>h2:first-child{margin-top:0}
+.legal .post table{display:table}
+@media(max-width:560px){.legal .post table{display:block}}
 @media(max-width:560px){.wrap{padding:0 20px}main{padding:44px 0 70px}.pack{padding:28px 22px}.post{font-size:16.5px}}
 `;
 
@@ -202,22 +209,24 @@ ${extra}<meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Epilogue:wght@300;400;500;600&display=swap" />
 <style>${CSS}</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 `;
 
-const header = `<header><div class="wrap nrow">
+const header = (active = "blog") => `<header><div class="wrap nrow">
 <a class="logo serif" href="/">Unbounded <i>Spac3s</i></a>
 <nav class="nlinks" aria-label="Main">
 <a class="hide-m" href="/?page=quiz">Find Your Fit</a>
 <a class="hide-m" href="/?page=templates">Templates</a>
-<a class="active" href="/blog">Blog</a>
+<a${active === "blog" ? ' class="active"' : ""} href="/blog">Blog</a>
 <a class="start" href="/?page=templates">Shop Now</a>
 </nav>
 </div></header>`;
 
 const footer = `<footer><div class="wrap frow">
 <a class="logo serif" href="/">Unbounded <i style="color:var(--gold)">Spac3s</i></a>
-<span><a href="/blog">Blog</a> &nbsp; <a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a> &nbsp; <a href="mailto:hello@unboundedspac3s.com">hello@unboundedspac3s.com</a></span>
-<span>&copy; ${new Date().getFullYear()} Unbounded Spac3s. All rights reserved.</span>
+<span><a href="/blog">Blog</a> &nbsp; <a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a> &nbsp; <a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="mailto:hello@unboundedspac3s.com">hello@unboundedspac3s.com</a></span>
+<span>&copy; ${new Date().getFullYear()} Unbounded Spac3s, a trading name of bigBOXLILbox Ltd (company no. 12522653)</span>
 </div></footer>`;
 
 const listItem = (p) => `<li><a href="/blog/${p.slug}">
@@ -279,7 +288,7 @@ ${p.sector ? `<meta property="article:section" content="${esc(p.sector)}" />\n` 
   return `${head({ title: `${p.title} | ${SITE_NAME}`, ogTitle: p.title, description: p.description, url: p.url, image: p.image, type: "article", extra })}${schema}
 </head>
 <body>
-${header}
+${header()}
 <main><div class="wrap"><article class="col">
 <div class="crumb"><a href="/">Home</a> &nbsp;/&nbsp; <a href="/blog">Blog</a></div>
 ${p.sector ? `<div class="sector">${esc(p.sector)}</div>` : ""}
@@ -313,7 +322,7 @@ const indexPage = (posts) => {
   return `${head({ title, description, url: SITE + "/blog", image: "", type: "website" })}${schema}
 </head>
 <body>
-${header}
+${header()}
 <main><div class="wrap"><div class="col">
 <div class="intro">
 <h1 class="serif">Practical guides for UK founders</h1>
@@ -327,12 +336,53 @@ ${footer}
 `;
 };
 
-const sitemap = (posts) => {
+const readLegal = (file) => {
+  let raw = fs.readFileSync(path.join(LEGAL_DIR, file), "utf8").replace(/\r\n/g, "\n");
+  raw = cleanDashes(raw, file);
+  const match = raw.match(/^(?:---\n)?([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!match) {
+    console.warn(`[legal] ${file}: skipped, the header block between --- lines is missing`);
+    return null;
+  }
+  const meta = {};
+  for (const line of match[1].split("\n")) {
+    const i = line.indexOf(":");
+    if (i < 1) continue;
+    meta[line.slice(0, i).trim().toLowerCase()] = line.slice(i + 1).trim().replace(/^["']|["']$/g, "");
+  }
+  const slug = file.replace(/\.md$/, "").toLowerCase();
+  return {
+    slug,
+    url: `${SITE}/${slug}`,
+    title: meta.title || slug,
+    description: meta.description || "",
+    updated: /^\d{4}-\d{2}-\d{2}$/.test(meta.updated || "") ? meta.updated : TODAY,
+    html: marked.parse(match[2]),
+  };
+};
+
+const legalPage = (l) => `${head({ title: `${l.title} | ${SITE_NAME}`, description: l.description, url: l.url, image: "", type: "website" })}
+</head>
+<body>
+${header("")}
+<main class="legal"><div class="wrap"><article class="col">
+<div class="crumb"><a href="/">Home</a> &nbsp;/&nbsp; ${esc(l.title)}</div>
+<h1 class="serif">${esc(l.title)}</h1>
+<div class="meta"><span>Last updated ${ukDate(l.updated)}</span></div>
+<div class="post">${l.html}</div>
+</article></div></main>
+${footer}
+</body>
+</html>
+`;
+
+const sitemap = (posts, legal = []) => {
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     ...MAIN_PAGES.map((p) => `  <url><loc>${SITE}${p}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>`),
     `  <url><loc>${SITE}/blog</loc><lastmod>${posts[0]?.updated || today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
     ...posts.map((p) => `  <url><loc>${p.url}</loc><lastmod>${p.updated}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`),
+    ...legal.map((l) => `  <url><loc>${l.url}</loc><lastmod>${l.updated}</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>`),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
 };
@@ -360,6 +410,11 @@ for (const p of posts) {
   fs.writeFileSync(path.join(DIST, "blog", `${p.slug}.html`), postPage(p, others));
 }
 fs.writeFileSync(path.join(DIST, "blog.html"), indexPage(posts));
-fs.writeFileSync(path.join(DIST, "sitemap.xml"), sitemap(posts));
+const legal = fs.existsSync(LEGAL_DIR)
+  ? fs.readdirSync(LEGAL_DIR).filter((f) => f.endsWith(".md") && !f.startsWith("_")).map(readLegal).filter(Boolean)
+  : [];
+for (const l of legal) fs.writeFileSync(path.join(DIST, `${l.slug}.html`), legalPage(l));
 
-console.log(`[blog] Built ${posts.length} post(s), the blog page and the sitemap.`);
+fs.writeFileSync(path.join(DIST, "sitemap.xml"), sitemap(posts, legal));
+
+console.log(`[blog] Built ${posts.length} post(s), ${legal.length} legal page(s), the blog page and the sitemap.`);

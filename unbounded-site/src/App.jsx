@@ -251,9 +251,9 @@ const Footer=({go})=>(
         <p className="ftag">Practical tools, templates and systems to help founders get organised, present professionally and run more smoothly.</p></div>
       <div className="fcol"><h5>Templates</h5><button onClick={()=>go("templates")}>Single packs</button><button onClick={()=>go("templates")}>Bundles</button><button onClick={()=>go("templates")}>Scale-up & global</button></div>
       <div className="fcol"><h5>Services</h5><button onClick={()=>go("services")}>What we do</button><button onClick={()=>go("services","process")}>How it works</button><button onClick={()=>go("services","book")}>Book a call</button></div>
-      <div className="fcol"><h5>Company</h5><a href="/blog">Blog</a><a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a><button onClick={()=>go("home","faq")}>FAQ</button><button onClick={()=>go("services","book")}>Contact</button></div>
+      <div className="fcol"><h5>Company</h5><a href="/blog">Blog</a><a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a><button onClick={()=>go("home","faq")}>FAQ</button><button onClick={()=>go("services","book")}>Contact</button><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
     </div>
-    <div className="fbot"><span>© 2026 Unbounded Spac3s. All rights reserved.</span><span>hello@unboundedspac3s.com</span><span>Built for founders. Designed with purpose.</span></div>
+    <div className="fbot"><span>© {new Date().getFullYear()} Unbounded Spac3s, a trading name of bigBOXLILbox Ltd (company no. 12522653)</span><span>hello@unboundedspac3s.com</span><span>Built for founders. Designed with purpose.</span></div>
   </div></footer>
 );
 
