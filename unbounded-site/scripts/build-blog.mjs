@@ -19,7 +19,7 @@ const DEFAULT_IMAGE = SITE + "/og-image.png";
 const PIN_IMAGE = SITE + "/pin-image.jpg";
 
 // Pages from the main site to keep in the sitemap
-const MAIN_PAGES = ["/"];
+const MAIN_PAGES = ["/", "/nhs"];
 
 // Legal pages, written in content/legal and published at /privacy and /terms
 const LEGAL_DIR = path.join(ROOT, "content", "legal");

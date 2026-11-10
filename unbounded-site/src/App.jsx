@@ -188,6 +188,17 @@ const CSS = `
 .u .pcard .prow{display:flex;align-items:center;justify-content:space-between;margin-top:20px}
 .u .pcard .pp{font-family:'Instrument Serif',serif;font-size:20px;color:var(--gold-br)}
 .u .bcard{background:linear-gradient(135deg,#2a2117,#1c1710);border:1px solid var(--line-g)}
+/* nhs & health page */
+.u .hhero h1{font-size:clamp(38px,5.4vw,62px);line-height:1.04}
+.u .why{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+@media(max-width:860px){.u .why{grid-template-columns:1fr;gap:20px}}
+.u .why p{font-size:17px;color:var(--muted)}
+.u .why p+p{margin-top:16px}
+.u .xp{list-style:none}
+.u .xp li{padding:14px 0 14px 26px;border-top:1px solid var(--line);font-size:16px;position:relative}
+.u .xp li:before{content:"";position:absolute;left:2px;top:21px;width:8px;height:8px;border-left:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg)}
+.u .steps5{grid-template-columns:repeat(5,1fr)}
+@media(max-width:900px){.u .steps5{grid-template-columns:1fr 1fr}}
 .u footer{background:var(--ink);color:var(--muted-l);padding:56px 0 28px}
 .u .fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px}
 @media(max-width:800px){.u .fgrid{grid-template-columns:1fr 1fr}}
@@ -212,6 +223,16 @@ const PROBLEMS=["Proposals and pitches look unprofessional, and you lose deals b
 const DOORS=[["01","Just getting started","You've got the idea. Let's give it a backbone.",["Business setup documents","Your first templates, ready to use","A plan you can actually act on"]],["02","Up and running","You're trading. Let's tighten the engine.",["Systems and processes that hold","Branded documents, done properly","Admin that stops leaking time"]],["03","Ready to scale","It works. Let's make it bigger without breaking it.",["Strategy and positioning","Investor and partner-ready materials","Done-for-you document suites"]]];
 const STEPS=[["Discovery Call or Brief","We understand where you are and what's getting in the way. 20 minutes is usually all we need."],["Proposal & Scope","A clear scope, timeline and fixed price, no surprises. You approve before anything begins."],["Build & Deliver","Fast turnaround, high quality output, delivered in the formats you actually use."],["Implement & Grow","Everything handed over and ready to use. Ongoing support available where needed."]];
 const FAQS=[["How quickly can I see results?","Templates are ready to use the moment you download them. Done-for-you services typically deliver within 48 to 72 hours. Full operations builds take 1 to 2 weeks depending on scope."],["Do I need a big budget to get started?","Not at all. Single packs start at £17 and give immediate, practical value. A Founder Strategy Session at £125 is the ideal low-cost entry point, and it offsets against any service package."],["Are your templates editable and customisable?","Yes, everything is fully editable and delivered in Word, ready to make your own. No locked templates, no design skills required."],["Do you work with specific industries?","We cover seven sectors, from beauty and events to trades, food, creatives and online. Good operations are universal, the principles don't change by industry."],["What if I'm not sure what I need?","Book the free discovery call. We'll tell you honestly what would make the biggest difference, whether that's a £17 pack or a full engagement."]];
+const MAILTO_NHS="mailto:hello@unboundedspac3s.com?subject=NHS%20and%20health%20enquiry";
+const HEALTH_PKGS=[
+  ["01","System and process implementation","For a new system or way of working that needs to stick. Mapping how the work runs today, designing the new process, training staff and seeing it through go-live. Also suits health tech companies rolling out in a trust.","Typically 6 to 12 weeks"],
+  ["02","Spend and process review","For teams who know money or time is leaking but not where. A close look at the data to find where it's going, then fixes to the processes behind it. You get clear findings, the savings available and a plan your team can follow.","Typically 3 to 4 weeks"],
+  ["03","Service and workforce mobilisation","For a new service, team or set of roles that needs to be up and running. Planning and leading the mobilisation, from recruitment and onboarding to governance and go-live, so new staff land well and stay.","Typically 3 to 6 months"],
+  ["04","Funded programme delivery","For incentive schemes and grant-funded programmes across practices or services. Setting up and running the delivery: comms to participants, claim and evidence forms, checks with your team, payment tracking and reporting back to the funder. The funds stay with you.","Runs for the life of the scheme"],
+  ["05","Workshops and planning sessions","Away days, or turning a messy idea into a plan with owners and dates. Includes preparation and the action plan afterwards.","Half or full day"],
+];
+const HEALTH_XP=["Managing large services and programmes funded by NHS England","Reducing spend through data analysis and new systems and processes","Embedding a new workforce, the clinical ARRS roles in primary care, through programme management","Designing and running the payment process for a cancer screening incentive scheme across GP practices","Working with ICBs, NHS England, public health teams and local councillors","Setting up training and creating inductions for volunteers","Recruiting nurses into London hospitals, where it all started in 2013"];
+const HEALTH_STEPS=[["A short call","20 minutes on Teams to understand what you need, your deadline and who signs it off."],["A written quote","Within three working days. A fixed price for a defined package, or a day rate for ongoing support."],["Terms agreed first","Nothing starts until the scope is agreed in writing."],["Regular check-ins","You see progress at agreed points, so there are no surprises at sign-off."],["Handover","Everything your team needs to carry it on without outside help."]];
 const SECTORS=[["Beauty & Hair","20 packs","beauty"],["Creatives","10 packs","creatives"],["Events","20 packs","events"],["Food & Hospitality","20 packs","food"],["Trades & Property","22 packs","trades"],["Online & Coaching","22 packs","online"]];
 const BUNDLES=[["Core Essentials Bundle","£97","The six core packs every business needs, in one.","coreBundle"],["Scale-Up Bundle","£77","Five packs to take a running business to the next level.","scaleupBundle"],["Go Global Bundle","£77","Five packs to expand your business beyond the UK.","goglobalBundle"],["Growth & Global Bundle","£127","All ten scale-up and go-global packs together.","growthGlobalBundle"]];
 const INTAKE={
@@ -250,7 +271,7 @@ const Footer=({go})=>(
       <div><div className="logo s">Unbounded <i style={{color:"var(--gold)",fontStyle:"italic"}}>Spac3s</i></div>
         <p className="ftag">Practical tools, templates and systems to help founders get organised, present professionally and run more smoothly.</p></div>
       <div className="fcol"><h5>Templates</h5><button onClick={()=>go("templates")}>Single packs</button><button onClick={()=>go("templates")}>Bundles</button><button onClick={()=>go("templates")}>Scale-up & global</button></div>
-      <div className="fcol"><h5>Services</h5><button onClick={()=>go("services")}>What we do</button><button onClick={()=>go("services","process")}>How it works</button><button onClick={()=>go("services","book")}>Book a call</button></div>
+      <div className="fcol"><h5>Services</h5><button onClick={()=>go("services")}>What we do</button><button onClick={()=>go("health")}>NHS & Health</button><button onClick={()=>go("services","process")}>How it works</button><button onClick={()=>go("services","book")}>Book a call</button></div>
       <div className="fcol"><h5>Company</h5><a href="/blog">Blog</a><a href="https://payhip.com/UnboundedSpac3s" target="_blank" rel="noopener">Shop</a><button onClick={()=>go("home","faq")}>FAQ</button><button onClick={()=>go("services","book")}>Contact</button><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
     </div>
     <div className="fbot"><span>© {new Date().getFullYear()} Unbounded Spac3s, a trading name of bigBOXLILbox Ltd (company no. 12522653)</span><span>hello@unboundedspac3s.com</span><span>Built for founders. Designed with purpose.</span></div>
@@ -269,15 +290,16 @@ export default function App(){
   const [quizEmail,setQuizEmail]=useState("");
   const [quizSent,setQuizSent]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
-  const go=(p,anchor)=>{setPage(p);setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
+  const go=(p,anchor)=>{setPage(p);try{if(p==="health")window.history.replaceState(null,"","/nhs");else if(window.location.pathname==="/nhs")window.history.replaceState(null,"","/");}catch{}setTimeout(()=>{anchor?document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}):window.scrollTo({top:0,behavior:"smooth"});},30);};
 
   useEffect(()=>{
     const params=new URLSearchParams(window.location.search);
-    const p=params.get("page");
+    const p=window.location.pathname.replace(/\/$/,"")==="/nhs"?"health":params.get("page");
     const anchor=params.get("to")||window.location.hash.replace("#","");
-    if(p&&["home","templates","services","quiz"].includes(p))setPage(p);
+    if(p&&["home","templates","services","quiz","health"].includes(p))setPage(p);
     if(anchor)setTimeout(()=>{document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"});},150);
   },[]);
+  useEffect(()=>{document.title=page==="health"?"NHS & Health | Unbounded Spac3s":"Unbounded Spac3s | Business Document Templates for UK Founders";},[page]);
   const findStart=async()=>{
     if(!desc.trim())return;
     setLoading(true); setResult(null);
@@ -302,6 +324,7 @@ export default function App(){
           <button className={page==="quiz"?"active":""} onClick={()=>go("quiz")}>Find Your Fit</button>
           <button className={page==="templates"?"active":""} onClick={()=>go("templates")}>Templates</button>
           <button className={page==="services"?"active":""} onClick={()=>go("services")}>Services</button>
+          <button className={page==="health"?"active":""} onClick={()=>go("health")}>NHS & Health</button>
           <button onClick={()=>go("services","book")}>Book a Call</button>
           <button onClick={()=>go("home","faq")}>FAQ</button>
           <a className="nlink" href="/blog">Blog</a>
@@ -313,6 +336,7 @@ export default function App(){
         <button onClick={()=>{go("quiz");setMenuOpen(false);}}>Find Your Fit</button>
         <button onClick={()=>{go("templates");setMenuOpen(false);}}>Templates</button>
         <button onClick={()=>{go("services");setMenuOpen(false);}}>Services</button>
+        <button onClick={()=>{go("health");setMenuOpen(false);}}>NHS & Health</button>
         <button onClick={()=>{go("services","book");setMenuOpen(false);}}>Book a Call</button>
         <button onClick={()=>{go("home","faq");setMenuOpen(false);}}>FAQ</button>
         <a className="nlink" href="/blog">Blog</a>
@@ -464,6 +488,36 @@ export default function App(){
           </div>
         );})()}
       </div></section></div>}
+
+      {page==="health"&&<>
+        <section className="hero hhero" style={{padding:0}}>
+          <div className="heroL">
+            <div className="eyebrow">NHS & Health</div>
+            <h1 className="s" style={{marginTop:22}}>Programme and operations support for <i>NHS and health teams</i></h1>
+            <p className="sub">Over a decade of NHS experience across primary, secondary and community care.</p>
+            <div className="hbtns"><a className="btn dark" href={MAILTO_NHS}>Book a call →</a><button className="btn ghost" onClick={()=>document.getElementById("packages")?.scrollIntoView({behavior:"smooth"})}>See the packages</button></div>
+          </div>
+          <div className="heroR"><div className="quote">"Practical support to finish the work that sits on <b>everyone's list</b> and nobody's diary."</div><div className="promise">Unbounded Spac3s for health</div></div>
+        </section>
+        <section style={{background:"var(--white)"}}><div className="wrap why">
+          <div><div className="eyebrow">Why it works</div><h2 className="h2">Knowing how the NHS works in practice makes the difference.</h2></div>
+          <div><p>The approval routes, the committees, the clinical voice that needs to be in the room, and a team already stretched before the new piece of work lands.</p><p>Unbounded Spac3s takes the thinking off you, gets it over the line, and leaves your team set up to carry it on.</p></div>
+        </div></section>
+        <section id="packages" style={{background:"var(--cream)"}}><div className="wrap"><div className="eyebrow">Consultancy packages</div><h2 className="h2">Support built around the work in front of you.</h2>
+          <p className="sub">Each package can include the pieces that make change stick, such as SOPs, document makeovers, staff training, and digital tools like Microsoft Copilot and Power Automate.</p>
+          <div className="grid3">
+            {HEALTH_PKGS.map(([num,title,d,len])=><div className="svc" key={num}><div className="num">{num}</div><h3>{title}</h3><p>{d}</p><div className="from" style={{marginTop:16}}>{len}</div></div>)}
+            <div className="svc dk"><div className="num">06</div><h3>Flexible support</h3><p>For work that doesn't fit a package, flexible support is available on a day rate.</p><a className="btn gold" href={MAILTO_NHS} style={{marginTop:20}}>Get in touch →</a></div>
+          </div></div></section>
+        <section style={{background:"var(--white)"}}><div className="wrap why">
+          <div><div className="eyebrow">Experience</div><h2 className="h2">Over a decade across primary care, secondary care and community services.</h2></div>
+          <ul className="xp">{HEALTH_XP.map(x=><li key={x}>{x}</li>)}</ul>
+        </div></section>
+        <section style={{background:"var(--cream)"}}><div className="wrap"><div className="eyebrow">How it works</div><h2 className="h2">From first call to handover.</h2>
+          <div className="steps steps5">{HEALTH_STEPS.map(([t,d],i)=><div className="step" key={t}><div className="circ">{i+1}</div><h4>{t}</h4><p>{d}</p></div>)}</div></div></section>
+        <section className="cta"><div className="wrap in"><div><h2>Got a piece of work that keeps slipping?</h2><p>Share what it is and when you need it by. If Unbounded Spac3s isn't the right fit, you'll hear that straight away, along with a pointer to someone who is.</p></div>
+          <div className="cbtns"><a className="btn wbtn" href={MAILTO_NHS}>Book a call →</a><a className="btn obtn" href="mailto:hello@unboundedspac3s.com">hello@unboundedspac3s.com</a></div></div></section>
+      </>}
 
       <Footer go={go}/>
     </div>
