@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="color-scheme" content="light">
+<title>Cervical Screening Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one-screen guide. Header with search, tab bar, one panel at a time, details open in a side drawer. */
+:root {
+  --bg: #FBF9FC;
+  --surface: #FFFFFF;
+  --fg: #2A1B3D;
+  --muted: #5B5068;
+  --line: #ECE4F0;
+  --brand: #4A2475;
+  --on-brand: #FFFFFF;
+  --purple: #7B3FBF;
+  --pink: #D02A6E;
+  --green: #1A7F50;
+  --blue: #0B7A8F;
+  --tint: #F8EEF5;
+  --note: #FFF4D6;
+  --note-fg: #5C4300;
+  --font: 'Public Sans', 'Segoe UI', Arial, sans-serif;
+}
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+.gate { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.gate form { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 32px; width: min(420px, 100%); display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px rgba(74,36,117,0.10); background-image: linear-gradient(90deg, var(--pink) 0 25%, var(--purple) 25% 50%, var(--green) 50% 75%, var(--blue) 75% 100%); background-size: 100% 6px; background-repeat: no-repeat; }
+.gate h2 { font-size: 22px; color: var(--brand); }
+.gate p { color: var(--muted); font-size: 15px; }
+.gate label { font-weight: 600; font-size: 14px; }
+.gate input { padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; }
+.gate input:focus { border-color: var(--pink); outline: none; box-shadow: 0 0 0 3px var(--tint); }
+.gate .err { color: var(--pink); font-size: 14px; min-height: 20px; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.5; display: flex; flex-direction: column; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.note { background: var(--note); color: var(--note-fg); font-size: 14px; padding-block: 8px; }
+.note .inner { max-width: 1200px; margin: 0 auto; }
+
+header { background: var(--surface); color: var(--fg); padding-block: 16px; border-top: 6px solid var(--pink); box-shadow: inset 0 6px 0 -0px transparent; background-image: linear-gradient(90deg, var(--pink) 0 25%, var(--purple) 25% 50%, var(--green) 50% 75%, var(--blue) 75% 100%); background-size: 100% 6px; background-repeat: no-repeat; border-top: 0; padding-top: 22px; }
+.brandline h1 { color: var(--brand); }
+.head { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.brandline { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.logo { border: 2px dashed var(--line); color: var(--muted); padding: 6px 10px; font-size: 13px; white-space: nowrap; }
+.brandline h1 { font-size: 22px; font-weight: 800; }
+.brandline p { font-size: 14px; color: var(--muted); }
+.search { position: relative; flex: 1 1 280px; max-width: 420px; }
+.search input { width: 100%; padding: 10px 14px; border-radius: 999px; border: 1.5px solid var(--line); font: inherit; background: var(--bg); color: var(--fg); }
+.search input:focus { border-color: var(--pink); outline: none; box-shadow: 0 0 0 3px var(--tint); }
+.results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.18); max-height: 320px; overflow: auto; z-index: 20; }
+.results button { display: block; width: 100%; text-align: left; padding: 10px 14px; border: 0; background: none; cursor: pointer; border-bottom: 1px solid var(--line); }
+.results button:hover, .results button:focus-visible { background: var(--tint); }
+.results small { display: block; color: var(--muted); }
+.results .none { padding: 12px 14px; color: var(--muted); }
+
+nav { background: var(--surface); border-bottom: 1px solid var(--line); }
+.tabs { max-width: 1200px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: thin; }
+.tab { flex: none; border: 0; background: none; padding: 14px 14px 12px; font-weight: 600; color: var(--muted); border-bottom: 4px solid transparent; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent, var(--blue)); }
+
+main { flex: 1; min-height: 0; overflow: auto; padding-block: 24px; }
+.panel { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.panel-head { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, var(--blue)); }
+.panel-head h2 { font-size: 28px; font-weight: 800; }
+.panel-head p { color: var(--muted); max-width: 65ch; }
+
+.glance { display: flex; flex-wrap: wrap; gap: 12px; }
+.chip { background: var(--tint); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+.chip b { margin-right: 4px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.card { text-align: left; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--accent, var(--blue)); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; min-width: 0; }
+.card:hover { box-shadow: 0 8px 22px rgba(74,36,117,0.14); transform: translateY(-1px); }
+.card { transition: box-shadow .15s, transform .15s; }
+.card h3 { font-size: 18px; font-weight: 700; }
+.card p { color: var(--muted); font-size: 15px; }
+.card .more { font-size: 14px; font-weight: 700; color: var(--accent, var(--blue)); margin-top: auto; }
+
+.flow { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
+.step { flex: 1 1 200px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.step b { color: var(--accent, var(--blue)); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.msgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.msg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.bubble { background: var(--tint); border-radius: 16px 16px 16px 4px; padding: 14px 16px; }
+.copy { align-self: flex-start; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+footer { background: var(--surface); border-top: 1px solid var(--line); padding-block: 12px; }
+.foot { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.btn { border: 0; background: var(--brand); color: var(--on-brand); border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; }
+
+.scrim { position: fixed; inset: 0; background: rgba(10,15,30,0.45); z-index: 30; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--surface); z-index: 31; box-shadow: -12px 0 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; padding: calc(24px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) 24px; gap: 16px; overflow: auto; border-top: 6px solid var(--accent, var(--blue)); }
+.drawer h3 { font-size: 22px; font-weight: 800; }
+.drawer .close { align-self: flex-end; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.drawer .body { display: flex; flex-direction: column; gap: 12px; }
+.placeholder { background: var(--tint); border: 1px dashed var(--line); border-radius: 8px; padding: 12px; color: var(--muted); }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 8px; z-index: 40; font-size: 14px; }
+
+.progress { height: 6px; background: var(--line); }
+.progress span { display: block; height: 100%; width: 0; background: var(--accent, var(--blue)); }
+.layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
+.side { display: flex; flex-direction: column; border-right: 1px solid var(--line); padding-right: 16px; }
+.side h4 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.side button, .side p { text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 10px 0; color: var(--fg); font-weight: 600; font-size: 15px; }
+.side button { cursor: pointer; }
+.side button:hover { color: var(--accent, var(--blue)); }
+.pager { align-self: flex-start; font-size: 13px; font-weight: 700; background: var(--tint); border-radius: 999px; padding: 4px 12px; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; gap: 20px; } .side { border-right: 0; padding-right: 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .drawer { animation: slide 0.2s ease-out; }
+  @keyframes slide { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <form id="gateform" autocomplete="off">
+    <h2>Cervical Screening Toolkit</h2>
+    <p>This concept is shared privately. Enter the access code from your email to view it.</p>
+    <label for="code">Access code</label>
+    <input id="code" type="password" required>
+    <button class="btn" type="submit">View the concept</button>
+    <span class="err" id="gateerr" role="alert"></span>
+  </form>
+</div>
+
+
+<div class="note wrap"><div class="inner"><b>Concept prototype</b> by Unbounded Spac3s for discussion. Sample content shown; your toolkit text goes in.</div></div>
+
+<header class="wrap">
+  <div class="head">
+    <div class="brandline">
+      <span class="logo">[Alliance logo]</span>
+      <div>
+        <h1>Cervical Screening Toolkit</h1>
+        <p>For primary care clinicians and practice teams</p>
+      </div>
+    </div>
+    <div class="search">
+      <label for="q" class="sr" hidden>Search the toolkit</label>
+      <input id="q" type="search" placeholder="Search the toolkit, for example “self-sampling”" autocomplete="off" aria-label="Search the toolkit">
+      <div class="results" id="results" hidden></div>
+    </div>
+  </div>
+</header>
+
+<nav class="wrap" aria-label="Toolkit sections">
+  <div class="tabs" role="tablist" id="tabs"></div>
+</nav>
+
+<div class="progress" id="progwrap" aria-hidden="true"><span id="prog"></span></div>
+<main class="wrap" id="main"></main>
+
+<footer class="wrap">
+  <div class="foot">
+    <span>Last reviewed: [date] · Owner: [team]</span>
+    <button class="btn" id="pdf" type="button">Download the printable version</button>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dtitle">
+  <button class="close" id="dclose" type="button">Close</button>
+  <span class="eyebrow" id="dsection"></span>
+  <h3 id="dtitle"></h3>
+  <div class="body" id="dbody"></div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const PH = (t) => `<div class="placeholder">${t}</div>`;
+const SECTIONS = [
+  { id: "home", name: "Home", accent: "var(--pink)", eyebrow: "Welcome", title: "Everything your practice needs, in one place",
+    intro: "Pick a section above or search for a topic. Every section fits on one screen, and details open beside it.",
+    glance: [["Who", "Clinicians, nurses and admin teams"], ["Time to find anything", "Under a minute"], ["Format", "Web guide plus printable version"]],
+    cards: [] },
+  { id: "understand", name: "Understanding screening", accent: "var(--purple)", eyebrow: "The basics", title: "Understanding cervical screening",
+    intro: "Key facts to share with patients and colleagues.",
+    cards: [
+      { t: "What screening checks for", s: "High-risk HPV, the virus that causes most cervical cancers.", d: "<p>Cervical screening checks for high-risk HPV, the virus that causes most cervical cancers.</p>" + PH("[More detail from your toolkit]") + '<p><a href="https://www.nhs.uk/conditions/cervical-screening/" target="_blank" rel="noopener">NHS: cervical screening</a></p>' },
+      { t: "Who is invited", s: "Women and people with a cervix aged 25 to 64.", d: "<p>Women and people with a cervix aged 25 to 64 are invited.</p>" + PH("[Notes on trans and non-binary patients, from your toolkit]") },
+      { t: "How often", s: "Since July 2025, 25 to 49 year olds with no HPV found move to every 5 years.", d: "<p>Since July 2025, people aged 25 to 49 with no HPV found are invited every 5 years instead of 3. People aged 50 to 64 are invited every 5 years.</p>" + PH("[Anything else from your toolkit]") },
+      { t: "Common questions", s: "Answers to what patients ask most.", d: PH("[Questions and answers from your toolkit]") }
+    ] },
+  { id: "ordering", name: "Ordering and supplies", accent: "var(--green)", eyebrow: "Practical", title: "Ordering and supplies",
+    intro: "How to order sample kits and who to contact.",
+    cards: [
+      { t: "Ordering sample kits", s: "Step by step, with the order link.", d: "<ol><li>[Step 1 from your toolkit]</li><li>[Step 2]</li><li>[Step 3]</li></ol>" + PH("[Order link and contact]") },
+      { t: "Who orders", s: "Usually reception or the admin team.", d: PH("[Role and responsibilities from your toolkit]") },
+      { t: "Problems with an order", s: "Who to call and what to have ready.", d: PH("[Contact details from your toolkit]") }
+    ] },
+  { id: "selfsample", name: "Self-sampling", accent: "var(--pink)", eyebrow: "New", title: "Self-sampling",
+    intro: "Offering home or in-practice self-sampling to eligible patients.",
+    cards: [
+      { t: "Who can be offered a kit", s: "Eligibility at a glance.", d: PH("[Eligibility criteria from your toolkit]") },
+      { t: "How to offer it", s: "What to say and what to do.", d: PH("[Steps and suggested wording from your toolkit]") },
+      { t: "Patient resources", s: "Leaflets, videos and translations.", d: PH("[Links from your toolkit]") }
+    ] },
+  { id: "pathways", name: "Care pathways", accent: "var(--purple)", eyebrow: "What happens next", title: "After the sample is taken",
+    intro: "The three main results and what follows. Sample layout based on the national programme.",
+    flow: [
+      ["No HPV found", "Patient returns to routine recall."],
+      ["HPV found, no cell changes", "Repeat test in 1 year."],
+      ["HPV found with cell changes", "Referral to colposcopy."]
+    ],
+    cards: [
+      { t: "HPV vaccine", s: "Link to the vaccine information.", d: PH("[HPV vaccine link from your toolkit]") },
+      { t: "Local pathway contacts", s: "Colposcopy and specialist teams.", d: PH("[Local contacts from your toolkit]") }
+    ] },
+  { id: "messages", name: "Message templates", accent: "var(--green)", eyebrow: "Copy and send", title: "Message templates",
+    intro: "Texts shown as patients see them. Copy straight into your messaging system.",
+    msgs: [
+      ["Invitation reminder", "Hi [name], you are due your cervical screening. It is a quick test that helps prevent cervical cancer. Book here: [link]. [Practice name]"],
+      ["Follow-up for people who have not booked", "Hi [name], we have not seen you for your cervical screening yet. We can offer early, late and weekend times. Book here: [link]. [Practice name]"]
+    ], cards: [] },
+  { id: "contacts", name: "Contacts", accent: "var(--blue)", eyebrow: "Who to ask", title: "Useful contacts",
+    intro: "Everyone you might need, in one table.",
+    table: [["[Team]", "[What they help with]", "[Phone]", "[Email]"], ["[Team]", "[What they help with]", "[Phone]", "[Email]"], ["[Team]", "[What they help with]", "[Phone]", "[Email]"]],
+    cards: [] },
+  { id: "orgs", name: "Organisations", accent: "var(--pink)", eyebrow: "Support", title: "Organisations and support",
+    intro: "Charities and services you can point patients to.",
+    cards: [
+      { t: "[Organisation]", s: "[What they offer]", d: PH("[Description and link from your toolkit]") },
+      { t: "[Organisation]", s: "[What they offer]", d: PH("[Description and link from your toolkit]") },
+      { t: "[Organisation]", s: "[What they offer]", d: PH("[Description and link from your toolkit]") }
+    ] }
+];
+SECTIONS[0].cards = SECTIONS.slice(1).map(s => ({ t: s.name, s: s.intro, go: s.id, accent: s.accent }));
+
+const tabsEl = document.getElementById("tabs");
+const main = document.getElementById("main");
+let current = "home";
+
+SECTIONS.forEach(s => {
+  const b = document.createElement("button");
+  b.className = "tab"; b.type = "button"; b.setAttribute("role", "tab"); b.id = "tab-" + s.id;
+  b.textContent = s.name; b.style.setProperty("--accent", s.accent);
+  b.addEventListener("click", () => show(s.id));
+  tabsEl.appendChild(b);
+});
+
+function esc(t) { const d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+
+function show(id, openCard) {
+  current = id;
+  const s = SECTIONS.find(x => x.id === id);
+  const idx = SECTIONS.indexOf(s);
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.id === "tab-" + id ? "true" : "false"));
+  let h = `<section class="panel" role="tabpanel" aria-labelledby="tab-${s.id}" style="--accent:${s.accent}">
+    <div class="panel-head"><span class="pager">${idx + 1} of ${SECTIONS.length}</span><span class="eyebrow">${esc(s.eyebrow)}</span><h2>${esc(s.title)}</h2><p>${esc(s.intro)}</p></div>`;
+  if (s.glance) h += `<div class="glance">${s.glance.map(g => `<span class="chip"><b>${esc(g[0])}:</b>${esc(g[1])}</span>`).join("")}</div>`;
+  if (s.flow) h += `<div class="flow">${s.flow.map(f => `<div class="step"><b>Result</b><h3>${esc(f[0])}</h3><p>${esc(f[1])}</p></div>`).join("")}</div>`;
+  if (s.msgs) h += `<div class="msgs">${s.msgs.map((m, i) => `<div class="msg"><h3>${esc(m[0])}</h3><div class="bubble" id="m${i}">${esc(m[1])}</div><button class="copy" type="button" data-copy="m${i}">Copy text</button></div>`).join("")}</div>`;
+  if (s.table) h += `<div class="table-wrap"><table><thead><tr><th>Team</th><th>Helps with</th><th>Phone</th><th>Email</th></tr></thead><tbody>${s.table.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  if (s.cards.length) h += `<div class="grid">${s.cards.map((c, i) => `<button class="card" type="button" data-i="${i}" ${c.accent ? `style="--accent:${c.accent}"` : ""}><h3>${esc(c.t)}</h3><p>${esc(c.s)}</p><span class="more">${c.go ? "Go to section" : "Open details"}</span></button>`).join("")}</div>`;
+  h += `</section>`;
+  const sideList = s.cards.length
+    ? s.cards.map((c, i) => `<button type="button" data-s="${i}">${esc(c.t)}</button>`).join("")
+    : ((s.msgs || []).map(m => `<p>${esc(m[0])}</p>`).join("") || "<p>Everything is on this screen.</p>");
+  main.innerHTML = `<div class="layout" style="--accent:${s.accent}"><aside class="side" aria-label="In this section"><h4>In this section:</h4>${sideList}</aside>${h}</div>`;
+  document.getElementById("progwrap").style.setProperty("--accent", s.accent);
+  document.getElementById("prog").style.width = ((idx + 1) / SECTIONS.length * 100) + "%";
+  main.scrollTop = 0;
+  main.querySelectorAll(".card").forEach(el => el.addEventListener("click", () => {
+    const c = s.cards[+el.dataset.i];
+    if (c.go) show(c.go); else openDrawer(s, c);
+  }));
+  main.querySelectorAll(".side button").forEach(el => el.addEventListener("click", () => {
+    const c = s.cards[+el.dataset.s];
+    if (c.go) show(c.go); else openDrawer(s, c);
+  }));
+  main.querySelectorAll(".copy").forEach(el => el.addEventListener("click", () => copy(el)));
+  if (openCard) openDrawer(s, openCard);
+}
+
+const drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim");
+let lastFocus = null;
+function openDrawer(s, c) {
+  lastFocus = document.activeElement;
+  drawer.style.setProperty("--accent", s.accent);
+  document.getElementById("dsection").textContent = s.name;
+  document.getElementById("dtitle").textContent = c.t;
+  document.getElementById("dbody").innerHTML = c.d;
+  drawer.hidden = false; scrim.hidden = false;
+  document.getElementById("dclose").focus();
+}
+function closeDrawer() { drawer.hidden = true; scrim.hidden = true; if (lastFocus) lastFocus.focus(); }
+document.getElementById("dclose").addEventListener("click", closeDrawer);
+scrim.addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!drawer.hidden) closeDrawer(); results.hidden = true; } });
+
+function toast(t) { const el = document.getElementById("toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600); }
+function copy(btn) {
+  const text = document.getElementById(btn.dataset.copy).textContent;
+  try {
+    navigator.clipboard.writeText(text).then(() => toast("Copied"), () => fallback(btn));
+  } catch (e) { fallback(btn); }
+}
+function fallback(btn) {
+  const r = document.createRange(); r.selectNodeContents(document.getElementById(btn.dataset.copy));
+  const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  toast("Text selected, press copy on your keyboard");
+}
+document.getElementById("pdf").addEventListener("click", () => toast("In the final version, this downloads the printable PDF"));
+
+/* Search across every section and card */
+const q = document.getElementById("q"), results = document.getElementById("results");
+const INDEX = [];
+SECTIONS.forEach(s => {
+  INDEX.push({ s, label: s.name, sub: s.intro, text: (s.name + " " + s.title + " " + s.intro).toLowerCase() });
+  s.cards.forEach(c => { if (!c.go) INDEX.push({ s, c, label: c.t, sub: s.name, text: (c.t + " " + c.s + " " + c.d.replace(/<[^>]+>/g, " ")).toLowerCase() }); });
+  (s.msgs || []).forEach(m => INDEX.push({ s, label: m[0], sub: s.name, text: (m[0] + " " + m[1]).toLowerCase() }));
+});
+q.addEventListener("input", () => {
+  const v = q.value.trim().toLowerCase();
+  if (!v) { results.hidden = true; return; }
+  const hits = INDEX.filter(x => x.text.includes(v)).slice(0, 8);
+  results.innerHTML = hits.length
+    ? hits.map((h, i) => `<button type="button" data-h="${i}">${esc(h.label)}<small>${esc(h.sub)}</small></button>`).join("")
+    : `<div class="none">No matches. Try “HPV” or “ordering”.</div>`;
+  results.hidden = false;
+  results.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const h = hits[+b.dataset.h]; results.hidden = true; q.value = "";
+    show(h.s.id, h.c);
+  }));
+});
+document.addEventListener("click", e => { if (!e.target.closest(".search")) results.hidden = true; });
+
+show("home");
+</script>
+
+<script>
+(function () {
+  const HASH = "9e41f8078ab234601b136dc8935fae492402d79f3dd24f473a950c872fd3e809";
+  const gate = document.getElementById("gate");
+  try { if (sessionStorage.getItem("cs-ok") === "1") gate.hidden = true; } catch (e) {}
+  async function sha(t) {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+    return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, "0")).join("");
+  }
+  document.getElementById("gateform").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = document.getElementById("code").value.trim().toLowerCase();
+    if (await sha(v) === HASH) {
+      gate.hidden = true;
+      try { sessionStorage.setItem("cs-ok", "1"); } catch (e) {}
+    } else {
+      document.getElementById("gateerr").textContent = "That code does not match. Check your email and try again.";
+    }
+  });
+})();
+</script>
+</body>
+</html>
